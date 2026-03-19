@@ -1,5 +1,5 @@
-import sql from 'mssql';
-//const sql = require('mssql');
+//import sql from 'mssql';
+const sql = require('mssql');
 const express = require('express');
 const app = express();
 
@@ -21,23 +21,25 @@ const config = {
     }
 };  
 
-this.poolconnection = await sql.connect(config);
+let pool; // shared connection
 
-app.get('/', async (req, res) => {
+// Initialize DB connection once
+async function initDB() {
     try {
-        let pool = await sql.connect(config);
-        let result = await pool.request().query('SELECT TOP 3 * FROM users');
-        res.json(result.recordset);
+        pool = await sql.connect(config);
+        console.log('Connected to database');
     } catch (err) {
-        res.status(500).send(err.message);
+        console.error('DB connection failed:', err);
     }
-});
+}
 
+// Route: Top 5 users
 app.get('/', async (req, res) => {
     try {
-        const pool = await sql.connect(config);
-        const result = await pool.request().query('SELECT TOP 5 * FROM [user] ORDER BY score DESC'); // adjust column name
-        res.json(result.recordset); // sends JSON
+        const result = await pool.request()
+            .query('SELECT TOP 3 * FROM users');
+
+        res.json(result.recordset);
     } catch (err) {
         console.error(err);
         res.status(500).send('Error fetching users');
@@ -45,9 +47,15 @@ app.get('/', async (req, res) => {
 });
 
 const serverPort = 3000;
-app.listen(serverPort, () => console.log(`Server running on port ${serverPort}`));
 
+async function startServer() {
+    await initDB(); // ensure DB is ready first
 
+    app.listen(serverPort, () => {
+        console.log(`Server running on port ${serverPort}`);
+    });
+}
 
+startServer();
 
 
