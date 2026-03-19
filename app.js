@@ -1,5 +1,5 @@
 import sql from 'mssql';
-const sql = require('mssql');
+//const sql = require('mssql');
 const express = require('express');
 const app = express();
 
@@ -33,9 +33,18 @@ app.get('/', async (req, res) => {
     }
 });
 
+app.get('/', async (req, res) => {
+    try {
+        const pool = await sql.connect(config);
+        const result = await pool.request().query('SELECT TOP 5 * FROM [user] ORDER BY score DESC'); // adjust column name
+        res.json(result.recordset); // sends JSON
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching users');
+    }
+});
 
-
-const serverPort = process.env.PORT || 3000;
+const serverPort = 3000;
 app.listen(serverPort, () => console.log(`Server running on port ${serverPort}`));
 
 
