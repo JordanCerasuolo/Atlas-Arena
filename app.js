@@ -41,12 +41,13 @@ app.get('/', async (req, res) => {
 
         res.json(result.recordset);
     } catch (err) {
+        console.log('Could not get users')
         console.error(err);
         res.status(500).send('Error fetching users');
     }
 });
 
-const serverPort = 3000;
+const serverPort = process.env.PORT || 3000;
 
 async function startServer() {
     await initDB(); // ensure DB is ready first
