@@ -42,7 +42,7 @@ app.get('/', async (req, res) => {
             throw new Error("Database connection not established");
         }
         const result = await pool.request()
-            .query('SELECT TOP 3 * FROM users ORDER BY score DESC');
+            .query('SELECT TOP 5 * FROM users ORDER BY totalScore DESC');
 
         res.render('home', { users: result.recordset });
     } catch (err) {
