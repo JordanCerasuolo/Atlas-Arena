@@ -47,7 +47,7 @@
                     <% users.forEach(user => { %>
                         <tr>
                             <td><%= user.username || 'Anonymous' %></td>
-                            <td><%= user.score || 0 %></td>
+                            <td><%= user.totalScore || 0 %></td>
                         </tr>
                     <% }); %>
                 <% } else { %>
