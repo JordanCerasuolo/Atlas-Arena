@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Arena - Map Trivia</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; }
+        #map-placeholder { 
+            width: 80%; height: 400px; 
+            background: #e0e0e0; margin: 20px auto; 
+            display: flex; align-items: center; justify-content: center;
+        }
+        .leaderboard { margin-top: 30px; }
+        table { margin: 0 auto; border-collapse: collapse; width: 50%; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Atlas Arena</h1>
+        <p>A Map-based Trivia Web application</p>
+    </header>
+
+    <main>
+        <div id="map-placeholder">
+            <p>Interactive Map Component will be loaded here.</p>
+        </div>
+
+        <button type="button" onclick="alert('Start Game functionality coming soon!')">
+            Start Trivia Quiz
+        </button>
+    </main>
+
+    <section class="leaderboard">
+        <h2>Top Players</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (users && users.length > 0) { %>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <td><%= user.username || 'Anonymous' %></td>
+                            <td><%= user.score || 0 %></td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="2">No players found yet.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Atlas Arena Project</p>
+    </footer>
+
+</body>
+</html>

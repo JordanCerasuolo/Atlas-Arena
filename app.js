@@ -8,6 +8,8 @@ const database = process.env.AZURE_SQL_DATABASE;
 const port = parseInt(process.env.AZURE_SQL_PORT);
 const authenticationType = process.env.AZURE_SQL_AUTHENTICATIONTYPE;
 
+app.set('view engine', 'ejs');
+
 // For system-assigned managed identity.
 const config = {
     server,
@@ -36,14 +38,16 @@ async function initDB() {
 // Route: Top 5 users
 app.get('/', async (req, res) => {
     try {
+        if (!pool) {
+            throw new Error("Database connection not established");
+        }
         const result = await pool.request()
-            .query('SELECT TOP 3 * FROM users');
+            .query('SELECT TOP 3 * FROM users ORDER BY score DESC');
 
-        res.json(result.recordset);
+        res.render('home', { users: result.recordset });
     } catch (err) {
-        console.log('Could not get users')
-        console.error(err);
-        res.status(500).send('Error fetching users');
+        console.error('Home page error:', err);
+        res.status(500).render('home', { users: [], error: "Currently unable to load leaderboard." });
     }
 });
 
