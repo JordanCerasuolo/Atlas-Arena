@@ -18,9 +18,9 @@ body { font-family: sans-serif; text-align: center; }
         <p>A Map-based Trivia Web application</p>
         
         <div style="margin-top: 15px; margin-bottom: 15px;">
-            <% if (currentUser) { %>
+            <% if (locals.currentUser) { %>
                 <span style="font-weight: bold; margin-right: 15px;">
-                    Welcome to the Arena, <%= currentUser.username %>!
+                    Welcome to the Arena, <%= locals.currentUser.username %>!
                 </span>
                 <a href="/logout" style="padding: 8px 16px; background-color: #ff4c4c; color: white; border-radius: 5px; text-decoration: none; font-size: 14px;">Sign Out</a>
             <% } else { %>

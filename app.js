@@ -2,6 +2,7 @@
 require('dotenv').config();
 const sql = require('mssql');
 const express = require('express');
+const { auth } = require('express-openid-connect');
 const app = express();
 
 const server = process.env.AZURE_SQL_SERVER;
