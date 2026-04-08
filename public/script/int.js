@@ -24,13 +24,9 @@ function addMarker(entry, Map3DElement, Marker3DInteractiveElement){
     });
 
     // Specify the action to take on click.
-    //interactiveMarker.addEventListener('gmp-click', (event) => {
-    //    map.flyCameraAround({
-    //        camera: originalCamera,
-    //        durationMillis: 50000,
-    //        repeatCount: 1,
-    //    });
-    //});
+    interactiveMarker.addEventListener('gmp-click', (event) => {
+        alert(entry.description);
+    });
 
     return interactiveMarker;
 }
