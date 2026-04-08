@@ -7,6 +7,30 @@
 // @ts-nocheck
 // [START maps_3d_marker_click_event]
 
+function addMarker(entry){
+// Create the interactive marker and set the attributes.
+
+
+    const interactiveMarker = new Marker3DInteractiveElement({
+        position: { lat: entry.posX, lng: posY, altitude: 100 },
+        sizePreserved: true,
+        altitudeMode: 'RELATIVE_TO_MESH',
+        extruded: true,
+        label: entry.name,
+    });
+
+    // Specify the action to take on click.
+    interactiveMarker.addEventListener('gmp-click', (event) => {
+        map.flyCameraAround({
+            camera: originalCamera,
+            durationMillis: 50000,
+            repeatCount: 1,
+        });
+    });
+
+    return interactiveMarker;
+}
+
 async function initMap() {
     // Include the interactive marker class
     const { Map3DElement, Marker3DInteractiveElement } =
@@ -26,25 +50,12 @@ async function initMap() {
         gestureHandling: 'COOPERATIVE',
     });
 
-    // Create the interactive marker and set the attributes.
-    const interactiveMarker = new Marker3DInteractiveElement({
-        position: { lat: 39.1178, lng: -106.4452, altitude: 100 },
-        sizePreserved: true,
-        altitudeMode: 'RELATIVE_TO_MESH',
-        extruded: true,
-        label: 'Mount Elbert',
+    
+    citiesTable.forEach((element, index, array) => {
+        map.append(addMarker(element))
     });
 
-    // Specify the action to take on click.
-    interactiveMarker.addEventListener('gmp-click', (event) => {
-        map.flyCameraAround({
-            camera: originalCamera,
-            durationMillis: 50000,
-            repeatCount: 1,
-        });
-    });
-
-    map.append(interactiveMarker);
+    //map.append(interactiveMarker);
 
     document.body.append(map);
     const newDiv = document.createElement("div");
