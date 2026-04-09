@@ -31,7 +31,7 @@ function addMarker(entry, Map3DElement, Marker3DInteractiveElement, map){
     // Specify the action to take on click.
     interactiveMarker.addEventListener('gmp-click', (event) => {
         alert(entry.description);
-        randomPin(map);
+        //randomPin(map);
     });
 
     return interactiveMarker;
