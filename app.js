@@ -52,8 +52,25 @@ async function initDB() {
     }
 }
 
-app.get('/interactive-map', (req, res) => {
-    res.render('worldMap.ejs', { title: "Iframe Content" }); 
+app.get('/interactive-map', async (req, res) => {
+
+    try {
+        if (!pool) {
+            throw new Error("Database connection not established");
+        }
+        const result2 = await pool.request()
+            .query('SELECT * FROM cities');
+        res.render('worldMap', { cities: result2.recordset });
+    } catch (err) {
+        console.error('Home page error:', err);
+        res.status(500).render('worldMap', { cities: [], error: "Currently unable to load leaderboard." });
+    }
+
+
+
+    //const cityIn = req.params.cities;
+    //const cityIn = req.query.cities;
+    //res.render('worldMap.ejs', {cities: cityIn}); 
 });
 
 
@@ -92,7 +109,7 @@ app.get('/', async (req, res) => {
 
         // 5. Fetch leaderboard (Top 5) and cities map data
         const result = await pool.request().query('SELECT TOP 5 * FROM users ORDER BY totalScore DESC');
-        const result2 = await pool.request().query('SELECT * FROM citiesTest');
+        const result2 = await pool.request().query('SELECT * FROM cities');
         
         // 6. Render the page, passing the user object to EJS
         res.render('home', { 
@@ -106,7 +123,7 @@ app.get('/', async (req, res) => {
     }
 });
 
-const serverPort = process.env.PORT || 3000;
+const serverPort = process.env.PORT || 1433;
 
 async function startServer() {
     await initDB(); // ensure DB is ready first
