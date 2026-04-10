@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title><%= city.name %> Quiz</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; }
+    </style>
+    <script>const cityInfo = <%- JSON.stringify(typeof city !== 'undefined' ? city : {}) %>;</script>
+
+    
+
+</head>
+<body style="background-color: white;">
+    <!--<header>
+        <h1>Quiz Screen</h1>
+        <p>A Map-based Trivia Web application</p>
+        
+        <div style="margin-top: 15px; margin-bottom: 15px;">
+            <% if (locals.currentUser) { %>
+                <span style="font-weight: bold; margin-right: 15px;">
+                    Welcome to the Arena, <%= locals.currentUser.username %>!
+                </span>
+                <a href="/logout" style="padding: 8px 16px; background-color: #ff4c4c; color: white; border-radius: 5px; text-decoration: none; font-size: 14px;">Sign Out</a>
+            <% } else { %>
+                <a href="/login" style="padding: 8px 16px; background-color: #0078D4; color: white; border-radius: 5px; text-decoration: none; font-size: 14px;">Sign In / Join Arena</a>
+            <% } %>
+        </div>
+    </header> -->
+
+    <main>
+        <p>Here is a quiz page for <%= city.name %>!</p>
+        <div>
+            <img src="/images/<%= city.img %>">
+        </div>
+
+        <button type="button" onclick='alert("Button functionality coming soon!");'>
+            Next Question
+        </button>
+    </main>
+
+    
+
+    <footer>
+        <p>&copy; 2026 Atlas Arena Project</p>
+    </footer>
+
+    <script>
+        
+
+        
+        
+    </script>
+
+
+</body>
+</html>
+
+
+
+
+

@@ -52,6 +52,17 @@ export function randomPin(){
         durationMillis: 10000,
     });
     
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function execute() {
+            await sleep(7000); // Wait 1 second
+            window.location.href = `/quiz?city=${encodeURIComponent(JSON.stringify(randomPin))}`;
+        }
+    execute();
+
+    
+    
 }
 
 let map;
