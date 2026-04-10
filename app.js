@@ -65,13 +65,15 @@ app.get('/interactive-map', async (req, res) => {
         console.error('Home page error:', err);
         res.status(500).render('worldMap', { cities: [], error: "Currently unable to load leaderboard." });
     }
-
-
-
-    //const cityIn = req.params.cities;
-    //const cityIn = req.query.cities;
-    //res.render('worldMap.ejs', {cities: cityIn}); 
 });
+
+app.get('/quiz', (req, res) => { // called when start quiz button is pushed.
+    const city = JSON.parse(req.query.city);
+    console.log(city.name);
+    res.render('quiz', { city: city });
+});
+
+
 
 
 
