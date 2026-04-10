@@ -58,6 +58,36 @@ export function randomPin(){
     
 }
 
+export function startQuiz(pin){
+    
+    const cam = {
+        center: { lat: parseFloat(pin.posX), lng: parseFloat(pin.posY), altitude: 7500 },
+        range: 1500,
+        tilt: 0,
+        heading: 0,
+    };
+
+    
+    map.flyCameraTo({
+        endCamera: cam,
+        durationMillis: 2000,
+    });
+    
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function execute() {
+            await sleep(1400); // Wait 1 second
+            window.location.href = `/quiz?city=${encodeURIComponent(JSON.stringify(pin))}`;
+        }
+    execute();
+
+    
+    
+}
+
+
+
 let map;
 
 
@@ -106,7 +136,7 @@ async function initMap() {
             <div class="map-popup-content">
                 <button class="popup-close-btn">&times;</button>
                 <div class="popup-header">
-                    <div class="flag-placeholder">🇺🇸</div>
+                    <div class="flag-placeholder"><img src="/images/${entry.img}"></div>
                     <h3 class="popup-title">${entry.name}</h3>
                 </div>
                 <p class="popup-description">${entry.description}</p>
@@ -124,7 +154,7 @@ async function initMap() {
 
         const startBtn = popup.querySelector('.quiz-start-btn');
         startBtn.addEventListener('click', () => {
-            alert('Starting quiz for ' + entry.name);
+            startQuiz(entry);
         });
     };
 
