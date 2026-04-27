@@ -12,6 +12,7 @@ var initDB = require('./database.js').initDB;
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
+app.use(express.json());
 
 // Auth0 Configuration uses dotenv stuff
 const authConfig = {
@@ -37,13 +38,20 @@ app.get('/interactive-map', async (req, res) => {
 
 app.get('/quiz', async (req, res) => { // called when start quiz button is pushed.
     const city = JSON.parse(req.query.city);
-    const result = await dbQuiz(city);
+    const quiz = await dbQuiz(city);
     //console.log(result);
-    res.render('quiz', result);
+    res.render('quiz', { cityName: city.name, questions: quiz, cityImg: city.img, cityID: city.id});
 });
 
+// TO DO: send the correct answer as well in order to tell the user what they missed.
+app.post('/api/submit-question', (req, res) => {
+    console.log(req.body); // { key: 'value' }
+    res.json({ status: 'success' });
 
-// Route: Top 5 users
+});
+
+// Route: Top 5 users 
+// TO DO: move these queries to the database.js file, or a new authentication file.
 app.get('/', async (req, res) => {
     const pool = getPool();
     try {

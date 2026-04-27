@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css">
-    <title><%= city.name %></title>
+    <title><%= cityName %></title>
 
     <style>
         body {
@@ -61,16 +61,22 @@
         }
     </style>
 
-    <script>
-        const cityInfo = <%- JSON.stringify(typeof city !== 'undefined' ? city : {}) %>;
-        const citiesTable = <%- JSON.stringify(typeof cities !== 'undefined' ? cities : []) %>;
-        const questionsTable = <%- JSON.stringify(typeof questions !== 'undefined' ? questions : []) %>;
-        const answers = [cityInfo[questionsTable[0].field], ...citiesTable.map(item => item[questionsTable[0].field]).slice(0,3)].sort(() => Math.random() - 0.5)
-        // Placeholder question data
+    <script> //<!-- TO DO: move this code into a seperate script file -->
+        //<!-- Import variables passed from app.js: -->
+        //const cityInfo = <%- JSON.stringify(typeof city !== 'undefined' ? city : {}) %>;
+        //const citiesTable = <%- JSON.stringify(typeof cities !== 'undefined' ? cities : []) %>;
+        //const questionsTable = <%- JSON.stringify(typeof questions !== 'undefined' ? questions : []) %>;
+//
+        // build a list of 4 answers by taking the answer from the input city and the answers from the next 3 cities from citiesTable. Finally randomize list
+        //const answers = [cityInfo[questionsTable[0].field], ...citiesTable.map(item => item[questionsTable[0].field]).slice(0,3)].sort(() => Math.random() - 0.5)
+        // Build data for question
+        
+        const questions = <%- JSON.stringify(typeof questions !== 'undefined' ? questions : {}) %>;
+        
+        // current question data
         const questionData = {
-            question: questionsTable[0].question,
-            answers: answers,
-            correct: answers.indexOf(cityInfo[questionsTable[0].field]),
+            question: questions[0].question.question,
+            answers: questions[0].choices,
         };
     </script>
 </head>
@@ -79,10 +85,10 @@
 
     <main>
         <div class="quiz-container">
-            <h2><%= city.name %></h2>
+            <h2><%= cityName %></h2>
 
             <div class="flag-placeholder">
-                <img src="/images/<%= city.img %>" alt="City Image">
+                <img src="/images/<%= cityImg %>" alt="City Image">
             </div>
 
             <h3 id="question"></h3>
@@ -96,6 +102,7 @@
     </main>
 
     <script>
+
         function loadQuestion() {
             document.getElementById("question").innerText = questionData.question;
 
@@ -105,21 +112,33 @@
             questionData.answers.forEach((answer, index) => {
                 const btn = document.createElement("button");
                 btn.innerText = answer;
-                btn.onclick = () => checkAnswer(index);
+                btn.onclick = () => checkAnswer(answer);
                 answersDiv.appendChild(btn);
             });
         }
 
-        function checkAnswer(selected) {
-            const feedback = document.getElementById("feedback");
+        async function checkAnswer(selected) {
 
-            if (selected === questionData.correct) {
-                feedback.innerText = "✅ Correct!";
-                feedback.style.color = "green";
-            } else {
-                feedback.innerText = "❌ Wrong!";
-                feedback.style.color = "red";
-            }
+
+            const response = await fetch('/api/submit-question', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cityID: <%= cityID %>, question: questions[0].question, answer: selected })
+            });
+            const result = await response.json();
+            console.log(result);
+
+
+
+            //const feedback = document.getElementById("feedback");
+//
+            //if (selected === questionData.correct) {
+            //    feedback.innerText = "✅ Correct!";
+            //    feedback.style.color = "green";
+            //} else {
+            //    feedback.innerText = "❌ Wrong!";
+            //    feedback.style.color = "red";
+            //}
         }
 
         function nextQuestion() {
@@ -136,55 +155,6 @@
 
 
 
-
-
-
-
-
-
-
-<!--
-
-<!DOCTYPE html>
-<html lang="en">
-
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/style.css">
-    <title><%= city.name %> Quiz</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; }
-    </style>
-    <script>const cityInfo = <%- JSON.stringify(typeof city !== 'undefined' ? city : {}) %>;</script>
-
-    
-
-</head>
-<body style="background-color: white;">
-
-    <main>
-        <p>Here is a quiz page for <%= city.name %>!</p>
-        <div class="flag-placeholder">
-            <img src="/images/<%= city.img %>">
-        </div>
-
-        <button type="button" onclick='alert("Button functionality coming soon!");'>
-            Next Question
-        </button>
-    </main>
-
-    <script>
-        
-
-        
-        
-    </script>
-
-
-</body>
-</html>
 
 
 
