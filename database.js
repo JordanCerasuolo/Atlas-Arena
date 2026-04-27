@@ -1,14 +1,8 @@
-//require('dotenv').config();
 const sql = require('mssql');
-
-
 const server = process.env.AZURE_SQL_SERVER;
 const database = process.env.AZURE_SQL_DATABASE;
 const port = parseInt(process.env.AZURE_SQL_PORT);
 const authenticationType = process.env.AZURE_SQL_AUTHENTICATIONTYPE;
-
-//console.log('authType:', JSON.stringify(authenticationType));
-
 
 let pool; // shared connection
 
@@ -25,17 +19,12 @@ const config = {
     }
 };  
 
-
-
-
 exports.getPool = () => pool;
 exports.config = config;
 exports.server = server;
 exports.database = database;
 exports.port = port;
 exports.authenticationType = authenticationType;
-
-
 
 // Initialize DB connection once
 async function initDB() {
@@ -70,7 +59,7 @@ async function getQuiz(city) {
         if (!pool) {
             throw new Error("Database connection not established");
         }
-        const result2 = await pool.request().query(`SELECT * FROM cities WHERE name != '${city.name}'`);
+        const result2 = await pool.request().query(`SELECT * FROM cities WHERE id != '${city.id}'`);
         const result = await pool.request().query('SELECT TOP 5 * FROM questions ORDER BY NEWID();');
         return { city: city, questions: result.recordset, cities: result2.recordset };
         //res.render('quiz', { city: city, questions: result.recordset, cities: result2.recordset });
@@ -86,30 +75,3 @@ async function getQuiz(city) {
 
 exports.dbCities = getCities;
 exports.dbQuiz = getQuiz;
-
-
-
-
-
-
-
-
-//
-//var mysql = require('mysql2');
-//
-//require('dotenv').config();
-//
-//var connection = mysql.createConnection({
-//    host : process.env.DATABASE_HOST,
-//    user : process.env.DATABASE_USER,
-//    password : process.env.DATABASE_PASSWORD,
-//    database : process.env.DATABASE_NAME
-//});
-//connection.connect((err => {
-//    if(err) throw err;
-//    console.log('MySQL Connected');
-//}));
-//
-//exports.databaseConnection = connection;
-//
-//
