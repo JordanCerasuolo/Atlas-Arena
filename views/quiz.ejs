@@ -111,6 +111,7 @@
     </style>
 
     <script>
+        // turn ejs variables into js constants
         const cityInfo = <%- JSON.stringify(typeof city !== 'undefined' ? city : {}) %>;
         const citiesTable = <%- JSON.stringify(typeof cities !== 'undefined' ? cities : []) %>;
         const questionsTable = <%- JSON.stringify(typeof questions !== 'undefined' ? questions : []) %>;
@@ -150,6 +151,7 @@
         let submitting = false;
         const recordedAnswers = [];
 
+        // return a list of shuffled answer choices based on the list of cities (remove duplicate answers)
         function buildChoices(question) {
             const correct = cityInfo[question.field];
             const seen = new Set([correct]);
@@ -165,6 +167,7 @@
             return [correct, ...shuffledWrongs].sort(() => Math.random() - 0.5);
         }
 
+        // initialize the question with q/total, answer choices, and submit buttons
         function loadQuestion() {
             const q = questionsTable[currentIndex];
             document.getElementById("progress").innerText =
@@ -192,6 +195,7 @@
             questionStartTime = Date.now();
         }
 
+        // when answer selected, check for correctness and give feedback accordingly
         function checkAnswer(selectedAnswer, btn) {
             if (locked) return;
             locked = true;
@@ -200,6 +204,7 @@
             const correctValue = cityInfo[q.field];
             const isCorrect = selectedAnswer === correctValue;
 
+            // classify buttons as right or wrong to highlight colors
             const allButtons = document.querySelectorAll('#answers button');
             allButtons.forEach(b => {
                 b.disabled = true;
@@ -214,6 +219,7 @@
             feedback.innerText = isCorrect ? "Correct!" : "Wrong!";
             feedback.style.color = isCorrect ? "green" : "red";
 
+            // build list of answers to send to server for scoring
             recordedAnswers.push({
                 field: q.field,
                 selectedAnswer: selectedAnswer,
@@ -223,6 +229,7 @@
             document.getElementById("next-btn").style.display = "inline-block";
         }
 
+        // load the next question if still taking quiz or submit for scoring otherwise
         async function nextQuestion() {
             if (currentIndex < questionsTable.length - 1) {
                 currentIndex++;
@@ -232,6 +239,7 @@
             }
         }
 
+        // post selected answers to be scored on the server side
         async function submitQuiz() {
             if (submitting) return;
             submitting = true;
@@ -264,6 +272,7 @@
             }
         }
 
+        // display all questions and your score for each
         function renderSummary(data) {
             const parts = [];
             parts.push('<h2>Quiz Complete!</h2>');
@@ -299,6 +308,7 @@
             document.getElementById("summary-content").innerHTML = parts.join('');
         }
 
+        // helper function for html shenanigans
         function escapeHtml(s) {
             return String(s == null ? '' : s)
                 .replace(/&/g, '&amp;')
@@ -308,11 +318,12 @@
                 .replace(/'/g, '&#39;');
         }
 
+        // if somehow there are no valid questions, tell user to try another city.
         if (questionsTable.length === 0) {
             document.getElementById("quiz-screen").innerHTML =
                 '<h2>No questions available</h2><p>Try another city.</p>' +
                 '<button onclick="location.href=\'/\'">Back to Map</button>';
-        } else {
+        } else { // load the question if there is one
             loadQuestion();
         }
     </script>
@@ -322,55 +333,6 @@
 
 
 
-
-
-
-
-
-
-
-<!--
-
-<!DOCTYPE html>
-<html lang="en">
-
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/style.css">
-    <title><%= city.name %> Quiz</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; }
-    </style>
-    <script>const cityInfo = <%- JSON.stringify(typeof city !== 'undefined' ? city : {}) %>;</script>
-
-    
-
-</head>
-<body style="background-color: white;">
-
-    <main>
-        <p>Here is a quiz page for <%= city.name %>!</p>
-        <div class="flag-placeholder">
-            <img src="/images/<%= city.img %>">
-        </div>
-
-        <button type="button" onclick='alert("Button functionality coming soon!");'>
-            Next Question
-        </button>
-    </main>
-
-    <script>
-        
-
-        
-        
-    </script>
-
-
-</body>
-</html>
 
 
 

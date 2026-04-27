@@ -1,6 +1,7 @@
 
 require('dotenv').config();
 
+// required imports from other files
 const sql = require('mssql');
 const express = require('express');
 const { auth } = require('express-openid-connect');
@@ -16,7 +17,9 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'))
 app.use(express.json())
 
-// Auth0 Configuration uses dotenv stuff
+// end imports
+
+// Auth0 Configuration using dotenv
 const authConfig = {
     authRequired: false, // Don't force login for the home page
     auth0Logout: true,
@@ -30,15 +33,17 @@ const authConfig = {
 // Initialize Auth0 router (this automatically creates /login and /logout routes)
 app.use(auth(authConfig));
 
-
+// import pool to use requests (needed until all requests moved to database.js)
 var getPool = require('./database.js').getPool;
 
+// render the world map when requested inside the iframe
 app.get('/interactive-map', async (req, res) => {
     const cities = await dbCities();
     res.render('worldMap', { cities });
 });
 
-app.get('/quiz', async (req, res) => { // called when start quiz button is pushed.
+// Switch from map to quiz for input city when start button is pushed.
+app.get('/quiz', async (req, res) => { 
     const city = JSON.parse(req.query.city);
     const result = await dbQuiz(city);
     //console.log(result);
@@ -47,16 +52,18 @@ app.get('/quiz', async (req, res) => { // called when start quiz button is pushe
 
 app.post('/quiz/submit', async (req, res) => {
     try {
+        // ensure real data
         const { cityId, answers } = req.body || {};
         if (!Number.isInteger(cityId) || !Array.isArray(answers)) {
             return res.status(400).json({ error: 'invalid payload' });
         }
-
+        // get city info
         const city = await dbCityById(cityId);
         if (!city) {
             return res.status(404).json({ error: 'city not found' });
         }
 
+        // calculate a score for each question
         const perQuestion = answers.slice(0, 5).map(a => {
             const field = String(a && a.field || '');
             const correctValue = city[field];
@@ -67,8 +74,11 @@ app.post('/quiz/submit', async (req, res) => {
         });
         const score = perQuestion.reduce((s, q) => s + q.points, 0);
 
+
         let recorded = false;
         let previousBest = 0;
+        
+        // update score if user is logged in
         if (req.oidc.isAuthenticated()) {
             const auth0_id = req.oidc.user.sub;
             const result = await dbSubmitQuiz({ auth0_id, cityName: city.name, score });
@@ -76,6 +86,7 @@ app.post('/quiz/submit', async (req, res) => {
             recorded = true;
         }
 
+        // return quiz info back to client
         res.json({
             recorded,
             score,
@@ -90,7 +101,8 @@ app.post('/quiz/submit', async (req, res) => {
 });
 
 
-// Route: Top 5 users
+// Main route including leaderboard
+// TO DO: Move queries into database.js
 app.get('/', async (req, res) => {
     const pool = getPool();
     try {
@@ -115,7 +127,7 @@ app.get('/', async (req, res) => {
             } else {
                 // 4. Returning User: Grab their existing database record
                 currentUser = checkUser.recordset[0];
-            }
+            }1433
         }
         // 5. Fetch leaderboard (Top 5) and cities map data
         const result = await pool.request().query('SELECT TOP 5 * FROM users ORDER BY totalScore DESC');
