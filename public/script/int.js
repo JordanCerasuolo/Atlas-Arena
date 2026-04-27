@@ -7,14 +7,10 @@
 // @ts-nocheck
 // [START maps_3d_marker_click_event]
 
+
+// take google earth variables and a marker to add, and place it on the map.
 function addMarker(entry, Map3DElement, Marker3DInteractiveElement, map){
-// Create the interactive marker and set the attributes.
-    
-
-    //const newDiv = document.createElement("div");
-    //newDiv.textContent = "table info: "+entry.name + " " + entry.description + " " + parseFloat(entry.posX) + " " + entry.posY;
-    //document.body.appendChild(newDiv);
-
+    // Create the interactive marker and set the attributes.
     const interactiveMarker = new Marker3DInteractiveElement({
         position: { lat: parseFloat(entry.posX), lng: parseFloat(entry.posY), altitude: 100 },
         sizePreserved: true,
@@ -23,6 +19,7 @@ function addMarker(entry, Map3DElement, Marker3DInteractiveElement, map){
         label: entry.name,
     });
 
+    // add click functionality
     interactiveMarker.addEventListener('gmp-click', (event) => {
         showMapPopup(entry);
     });
@@ -30,8 +27,11 @@ function addMarker(entry, Map3DElement, Marker3DInteractiveElement, map){
     return interactiveMarker;
 }
 
+// Selects a random pin as a target for a quiz and starts the quiz. Called by "Start Random Quiz"
 export function randomPin(){
     const randomPin = citiesTable[Math.floor(Math.random() * citiesTable.length)];
+    
+    // define target camera position
     const cam = {
         center: { lat: parseFloat(randomPin.posX), lng: parseFloat(randomPin.posY), altitude: 7500 },
         range: 1500,
@@ -46,11 +46,12 @@ export function randomPin(){
     });
     
 
+    // wait for a few seconds and then start the quiz
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         async function execute() {
-            await sleep(7000); // Wait 1 second
-            window.location.href = `/quiz?city=${encodeURIComponent(JSON.stringify(randomPin))}`;
+            await sleep(7000); // Wait 7 seconds
+            window.location.href = `/quiz?city=${encodeURIComponent(JSON.stringify(randomPin))}`; // change from map to quiz inside iframe
         }
     execute();
 
@@ -58,8 +59,10 @@ export function randomPin(){
     
 }
 
+// take a target city and fly to/start the quiz for it
 export function startQuiz(pin){
     
+    // define target camera position
     const cam = {
         center: { lat: parseFloat(pin.posX), lng: parseFloat(pin.posY), altitude: 7500 },
         range: 1500,
@@ -74,11 +77,12 @@ export function startQuiz(pin){
     });
     
 
+    // start the quiz after flying to it
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         async function execute() {
-            await sleep(1400); // Wait 1 second
-            window.location.href = `/quiz?city=${encodeURIComponent(JSON.stringify(pin))}`;
+            await sleep(1400); // Wait 1.4 seconds
+            window.location.href = `/quiz?city=${encodeURIComponent(JSON.stringify(pin))}`; // change from map to quiz inside iframe
         }
     execute();
 
@@ -90,14 +94,14 @@ export function startQuiz(pin){
 
 let map;
 
-
+// function for google earth API initialization
 async function initMap() {
     // Include the interactive marker class
     const { Map3DElement, Marker3DInteractiveElement } =
         await google.maps.importLibrary('maps3d');
 
-    //const container = document.getElementById("map-placeholder");
-    // We will use this to place the camrea for the intial view but also to fly around the starting point.
+    
+    // We will use this to place the camrea for the intial view
     const originalCamera = {
         center: { lat: 38.7946, lng: -106.5348, altitude: 5000000 },
         range: 1500,
@@ -111,18 +115,15 @@ async function initMap() {
         gestureHandling: 'GREEDY', // scroll to zoom instead of pinch
     });
 
-    //const newDiv = document.createElement("div");
-    //newDiv.textContent = "table info: "+citiesTable;
-    //document.body.appendChild(newDiv);
 
-
-
+    // for all cities in the database, add a marker
     citiesTable.forEach((element, index, array) => {
         map.append(addMarker(element, Map3DElement, Marker3DInteractiveElement, map))
     });
 
     // test city used to go here :(
 
+    // insert the map into the iframe
     document.body.append(map);
 
     // Create popup div
@@ -159,21 +160,15 @@ async function initMap() {
         });
     };
 
-    //const newDiv = document.createElement("div");
-    //newDiv.textContent = "table info: "+addMarker({name: 'Test City', description: 'Test description', posX: '40', posY: '50'}, Map3DElement, Marker3DInteractiveElement);
-    //document.body.appendChild(newDiv);
 
-    //console.log("test");
 }
 
 //console.log("test");
 initMap();
 
+// because the map is in an iframe, it must listen for button clicks outside of the iframe. In this case, it is the start random quiz button.
 window.addEventListener("message", (event) => {
     if (event.data === "runRandomPin") {
         randomPin();
     }
 });
-
-//setTimeout(function() { randomPin(); }, 10000);
-// [END maps_3d_marker_click_event]

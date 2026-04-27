@@ -1,3 +1,4 @@
+// Azure required variables
 const sql = require('mssql');
 const server = process.env.AZURE_SQL_SERVER;
 const database = process.env.AZURE_SQL_DATABASE;
@@ -19,6 +20,10 @@ const config = {
     }
 };  
 
+// end required variables
+
+
+// export db variables to still allow queries in app.js (required until all queries moved.)
 exports.getPool = () => pool;
 exports.config = config;
 exports.server = server;
@@ -26,7 +31,7 @@ exports.database = database;
 exports.port = port;
 exports.authenticationType = authenticationType;
 
-// Initialize DB connection once
+// Initialize DB connection
 async function initDB() {
     try {
         pool = await sql.connect(config);
@@ -40,7 +45,7 @@ exports.initDB = initDB;
 
 let cities;
 
-
+// get all records from the cities table
 async function getCities() {
     try {
         if (!pool) {
@@ -54,6 +59,7 @@ async function getCities() {
     }
 }
 
+// get random cities for answer choices and 5 random questions
 async function getQuiz(city) {
     try {
         if (!pool) {
@@ -62,14 +68,13 @@ async function getQuiz(city) {
         const result2 = await pool.request().query(`SELECT * FROM cities WHERE id != '${city.id}'`);
         const result = await pool.request().query('SELECT TOP 5 * FROM questions ORDER BY NEWID();');
         return { city: city, questions: result.recordset, cities: result2.recordset };
-        //res.render('quiz', { city: city, questions: result.recordset, cities: result2.recordset });
     } catch (err) {
         console.error('Quiz Error:', err);
         return { city: city, questions: [], cities: [] };
-        //res.status(500).render('quiz', { city: city, questions: [], cities: [], error: "Currently unable to load leaderboard." });
     }
 }
 
+// return city data based on its id
 async function getCityById(id) {
     try {
         if (!pool) {
@@ -85,6 +90,7 @@ async function getCityById(id) {
     }
 }
 
+// insert data into the users table based on the auth0id, which city, and the score.
 async function submitQuiz({ auth0_id, cityName, score }) {
     if (!pool) {
         throw new Error("Database connection not established");
@@ -127,7 +133,7 @@ async function submitQuiz({ auth0_id, cityName, score }) {
     }
 }
 
-
+// export functions to app.js
 exports.dbCities = getCities;
 exports.dbQuiz = getQuiz;
 exports.dbCityById = getCityById;
